@@ -50,7 +50,6 @@ public class Player : MonoBehaviour
     [Header("Physics")]
     [SerializeField] float groundDrag = 6f;
     [SerializeField] float airDrag = 2f;
-    [SerializeField] float weaponKnockForce;
     [SerializeField] float fallGrav;
     [SerializeField] float longJumpGrav;
     float horizontalMovement;
