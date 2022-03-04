@@ -86,7 +86,7 @@ public class Player : MonoBehaviour
     [Header("Keybindings")]
     [SerializeField] KeyCode jumpKey = KeyCode.Space;
     [SerializeField] KeyCode dashKey = KeyCode.LeftShift;
-    [SerializeField] KeyCode crouchKey = KeyCode.LeftControl; //Not in use
+    /*[SerializeField] KeyCode crouchKey = KeyCode.LeftControl; //Not in use*/
     #endregion
 
     #region References
