@@ -85,17 +85,13 @@ public class Player : MonoBehaviour
     #region Keybindings
     [Header("Keybindings")]
     [SerializeField] KeyCode jumpKey = KeyCode.Space;
-    [SerializeField] KeyCode reloadKey = KeyCode.R;
-    [SerializeField] KeyCode attackKey = KeyCode.Mouse0;
-    [SerializeField] KeyCode secondaryAttackKey = KeyCode.Mouse1;
     [SerializeField] KeyCode dashKey = KeyCode.LeftShift;
-    //Crouching
+    [SerializeField] KeyCode crouchKey = KeyCode.LeftControl; //Not in use
     #endregion
 
     #region References
     [Header("References")]
     Rigidbody rb;
-    Weapon weaponScript;
     #endregion
     #endregion
 
@@ -110,7 +106,6 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        weaponScript = FindObjectOfType<Weapon>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -139,21 +134,9 @@ public class Player : MonoBehaviour
     #region Functions
     void CheckInput()
     {
-        if (Input.GetKeyDown(reloadKey))
-        {
-            StartCoroutine(weaponScript.Reload());
-        }
         if (Input.GetKeyDown(jumpKey) && isGrounded)
         {
             Jump();
-        }
-        if (Input.GetKeyDown(attackKey))
-        {
-            StartCoroutine(weaponScript.Attack());
-        }
-        if (Input.GetKeyDown(secondaryAttackKey))
-        {
-            StartCoroutine(weaponScript.SecondaryAttack());
         }
         if (Input.GetKeyDown(dashKey))
         {
@@ -283,10 +266,6 @@ public class Player : MonoBehaviour
         {
             isDead = false;
         }
-    }
-    public void WeaponKnockback()
-    {
-        rb.AddForce(-playerCamera.transform.forward * weaponKnockForce, ForceMode.Impulse);
     }
     #endregion
 
