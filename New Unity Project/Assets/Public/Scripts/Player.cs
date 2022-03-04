@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Player : MonoBehaviour
 {
@@ -36,7 +37,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float camTilt;
     [SerializeField] private float camTiltTime;
     [SerializeField] private float wallDistance = .5f;
-    [SerializeField] LayerMask noRunLayer;
+    [SerializeField] LayerMask RunLayer;
     private bool wallLeft = false;
     private bool wallRight = false;
     public float tilt { get; private set; }
@@ -82,10 +83,17 @@ public class Player : MonoBehaviour
     float yRotation;
     #endregion
 
+    #region Interact
+    [SerializeField] float interactRange;
+    List<IInteractable> interactables;
+    LayerMask interactableLayer;
+    #endregion
+
     #region Keybindings
     [Header("Keybindings")]
     [SerializeField] KeyCode jumpKey = KeyCode.Space;
     [SerializeField] KeyCode dashKey = KeyCode.LeftShift;
+    [SerializeField] KeyCode interactKey = KeyCode.E;
     /*[SerializeField] KeyCode crouchKey = KeyCode.LeftControl; //Not in use*/
     #endregion
 
@@ -105,6 +113,8 @@ public class Player : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        interactables = FindObjectsOfType<MonoBehaviour>().OfType<IInteractable>().ToList();
+        interactableLayer = LayerMask.GetMask("Interactable");
         rb.freezeRotation = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -128,6 +138,7 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         MovePlayer();
+        CheckForInteractable();
     }
     #endregion
 
@@ -141,6 +152,10 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(dashKey))
         {
             StartCoroutine(Dash());
+        }
+        if (Input.GetKeyDown(interactKey))
+        {
+            InteractWithObjects();
         }
     }
 
@@ -218,6 +233,23 @@ public class Player : MonoBehaviour
         //Wack??
         player.transform.rotation = Quaternion.Euler(0f, yRotation, 0f);
         playerCamera.transform.rotation = Quaternion.Euler(xRotation, yRotation, tilt);
+    }
+    void InteractWithObjects()
+    {
+        Debug.Log(interactables.Count);
+        for (int i = 0; i < interactables.Count; i++)
+        {
+            interactables[i].Interact();
+        }
+    }
+    void CheckForInteractable()
+    {
+        interactables.Clear();
+        RaycastHit hit;
+        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, interactRange, interactableLayer))
+        {
+            interactables.Add(hit.collider.gameObject.GetComponent<IInteractable>());
+        }
     }
     void ControlDrag()
     {
@@ -297,8 +329,8 @@ public class Player : MonoBehaviour
 
     void CheckWall()
     {
-        wallLeft = Physics.Raycast(player.transform.position, -playerCamera.transform.right, out leftWallHit, wallDistance, ~noRunLayer);
-        wallRight = Physics.Raycast(player.transform.position, playerCamera.transform.right, out rightWallHit, wallDistance, ~noRunLayer);
+        wallLeft = Physics.Raycast(player.transform.position, -playerCamera.transform.right, out leftWallHit, wallDistance, RunLayer);
+        wallRight = Physics.Raycast(player.transform.position, playerCamera.transform.right, out rightWallHit, wallDistance, RunLayer);
     }
 
     void StartWallRun()
