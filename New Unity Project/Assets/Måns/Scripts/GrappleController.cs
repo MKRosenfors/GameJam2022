@@ -48,7 +48,10 @@ public class GrappleController : MonoBehaviour
     }
     void Grapple()
     {
-        if (currentGrapple == null) return;
+        if (currentGrapple == null) {
+            reelSoundSource.Stop();
+            return;
+        }
         if (currentGrapple.GetComponent<Grapple>().isGrappled == false) return;
         if ((currentGrapple.transform.position - transform.position).magnitude < minGrappleDistance) return;
 
@@ -60,7 +63,7 @@ public class GrappleController : MonoBehaviour
             }
             GetComponent<Rigidbody>().AddForce((
                 currentGrapple.transform.position - transform.position)
-                * grappleSpeed);
+                * grappleSpeed * Time.deltaTime * 60f);
         }
         else
         {
