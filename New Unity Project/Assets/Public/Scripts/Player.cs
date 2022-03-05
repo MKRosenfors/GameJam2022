@@ -110,6 +110,7 @@ public class Player : MonoBehaviour
     #region References
     [Header("References")]
     Rigidbody rb;
+    private Transform latestCheckpointPosition;
     #endregion
     #endregion
 
@@ -285,9 +286,29 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void KillPlayer()
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.tag == "Trap")
+        {
+            RespawnPlayer();
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Checkpoint")
+        {
+            latestCheckpointPosition = other.transform;
+            Debug.Log("New Checkpoint set");
+        }
+    }
+
+    void KillPlayer()
     {
         isDead = true;
+    }
+    void RespawnPlayer()
+    {
+        transform.position = latestCheckpointPosition.position;
     }
     #endregion
 
@@ -340,7 +361,7 @@ public class Player : MonoBehaviour
     {
         rb.useGravity = false;
 
-        rb.AddForce(Vector3.down * wallRunGravity, ForceMode.Force);
+        rb.AddForce(Vector3.down * wallRunGravity * Time.deltaTime, ForceMode.Force);
 
         playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, wallRunfov, wallRunfovTime * Time.deltaTime);
 
