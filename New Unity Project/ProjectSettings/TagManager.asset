@@ -14,8 +14,8 @@ TagManager:
   - Player
   - Interactable
   - Wall Runnable
-  - 
-  - 
+  - Grapple
+  - Grappable
   - 
   - 
   - 
