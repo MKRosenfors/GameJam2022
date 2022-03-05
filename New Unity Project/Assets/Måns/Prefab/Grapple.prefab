@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3725577611237797160}
   - component: {fileID: 3824034646100735137}
   - component: {fileID: 9166893172252284375}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Grapple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,9 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d9c1c75b17350842a49004f6d4b3e6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grappable:
-    serializedVersion: 2
-    m_Bits: 1024
+  isGrappled: 0
 --- !u!136 &3725577611237797160
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -191,7 +189,7 @@ GameObject:
   - component: {fileID: 1879709419284718091}
   - component: {fileID: 8326817935629605362}
   - component: {fileID: 2359685524649839837}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
