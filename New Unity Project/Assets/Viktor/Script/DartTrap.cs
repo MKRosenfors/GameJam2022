@@ -8,18 +8,7 @@ public class DartTrap : MonoBehaviour
     [SerializeField] float projectileSpeed;
     [SerializeField] GameObject dartPrefab;
     private Vector3 randomPosition;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
+    
     private void OnTriggerEnter(Collider player)
     {
         if (player.tag == "Player")

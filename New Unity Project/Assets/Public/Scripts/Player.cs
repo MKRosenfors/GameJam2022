@@ -8,7 +8,6 @@ public class Player : MonoBehaviour
     #region Declarations and Variables
     #region Stats
     [Header("Stats")]
-    [SerializeField] public float health;
     public bool isDead;
     float playerHeight = 2f;
     #endregion
@@ -117,10 +116,6 @@ public class Player : MonoBehaviour
 
 
     #region Updates
-    void Awake()
-    {
-        health = 100;
-    }
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -141,7 +136,6 @@ public class Player : MonoBehaviour
         ControlDrag();
         ControlGrav();
         CheckWall();
-        CheckIfDead();
 
         isGrounded = Physics.CheckSphere(new Vector3(player.transform.position.x, player.transform.position.y + groundDetectionSphereOffset, player.transform.position.z), groundDetectionSphere, groundMask);
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
@@ -291,29 +285,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float damage)
+    public void KillPlayer()
     {
-        health -= damage;
-    }
-    public float returnPlayerHealth()
-    {
-        return health;
-    }
-    public void CheckIfDead()
-    {
-        if(health < 1)
-        {
-            isDead = true;
-            moveSpeed = 0f;
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            sensX = 0;
-            sensY = 0;
-        }
-        else
-        {
-            isDead = false;
-        }
+        isDead = true;
     }
     #endregion
 
