@@ -5,29 +5,18 @@ using UnityEngine;
 public class BladeWall : MonoBehaviour
 {
     #region Variables
-    [SerializeField]
-    Transform startPos;
-    [SerializeField]
-    Transform endPos;
+    [SerializeField] Transform startPos;
+    [SerializeField] Transform endPos;
 
-    [SerializeField]
-    float pathProgress;
-
-    [SerializeField]
-    float progressMod;
-    [SerializeField]
-    float sinHeightMod;
-    [SerializeField]
-    float sinSpeedMod;
+    [SerializeField] float pathProgress;
+    [SerializeField] float progressMod;
 
 
     #endregion
-    #region Core Functions
     void Update()
     {
         HandleProgress();
         Move();
-        AddSinOffset();
     }
     private void OnDrawGizmos()
     {
@@ -37,7 +26,6 @@ public class BladeWall : MonoBehaviour
         Gizmos.DrawSphere(endPos.position, 0.2f);
         Gizmos.DrawLine(startPos.position, endPos.position);
     }
-    #endregion
     #region Functions
     void HandleProgress()
     {
@@ -50,11 +38,6 @@ public class BladeWall : MonoBehaviour
     void Move()
     {
         gameObject.transform.position = Vector3.Lerp(startPos.position, endPos.position, pathProgress);
-    }
-    void AddSinOffset()
-    {
-        float sinValue = Mathf.Sin(Time.realtimeSinceStartup * Mathf.PI * sinSpeedMod) * sinHeightMod;
-        gameObject.transform.position = new Vector3(transform.position.x, transform.position.y + sinValue, transform.position.z);
     }
 
 
