@@ -6,6 +6,8 @@ public class GrappleController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] Transform cameraTransform;
+    [SerializeField] AudioSource soundSource;
+    [SerializeField] AudioSource reelSoundSource;
 
     [Header("Grapple")]
     [SerializeField] KeyCode grappleKey;
@@ -52,13 +54,22 @@ public class GrappleController : MonoBehaviour
 
         if (Input.GetKey(grappleReelKey))
         {
+            if (!reelSoundSource.isPlaying)
+            {
+                reelSoundSource.Play();
+            }
             GetComponent<Rigidbody>().AddForce((
                 currentGrapple.transform.position - transform.position)
                 * grappleSpeed);
         }
+        else
+        {
+            reelSoundSource.Stop();
+        }
     }
     void ShootGrapple()
     {
+        soundSource.Play();
         currentGrapple = Instantiate(grapplePrefab, cameraTransform.position, cameraTransform.rotation);
         Grapple grapple = currentGrapple.GetComponent<Grapple>();
         grapple.SetVelocity(grappleThrowMod);
