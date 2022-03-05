@@ -30,13 +30,13 @@ public class Player : MonoBehaviour
 
     #region Wall Running
     [Header("Wall Running")]
-    [SerializeField] private float wallRunGravity;
-    [SerializeField] private float wallRunJumpForce;
-    [SerializeField] private float wallRunfov;
-    [SerializeField] private float wallRunfovTime;
-    [SerializeField] private float camTilt;
-    [SerializeField] private float camTiltTime;
-    [SerializeField] private float wallDistance = .5f;
+    [SerializeField] float wallRunGravity;
+    [SerializeField] float wallRunJumpForce;
+    [SerializeField] float wallRunfov;
+    [SerializeField] float wallRunfovTime;
+    [SerializeField] float camTilt;
+    [SerializeField] float camTiltTime;
+    [SerializeField] float wallDistance = .5f;
     [SerializeField] LayerMask RunLayer;
     private bool wallLeft = false;
     private bool wallRight = false;
@@ -44,6 +44,18 @@ public class Player : MonoBehaviour
     RaycastHit leftWallHit;
     RaycastHit rightWallHit;
     #endregion
+
+    #region Wall Climb
+    [Header("Climbing")]
+    [SerializeField] float climbingGrav;
+    [SerializeField] float climbingSpeed;
+    [SerializeField] LayerMask ClimbLayer;
+    private bool canClimb;
+    private Vector3 climbingVector;
+    private bool wallForward = false;
+    RaycastHit forwardWallHit;
+    #endregion
+
     #endregion
 
     #region Physics
@@ -124,6 +136,7 @@ public class Player : MonoBehaviour
         RotateCamera();
         CheckInput();
         CheckWallRun();
+        CheckWallClimb();
         MyInput();
         ControlDrag();
         ControlGrav();
@@ -147,6 +160,10 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(jumpKey) && isGrounded)
         {
             Jump();
+        }
+        if (Input.GetKey(jumpKey) && canClimb)
+        {
+            Climb();
         }
         if (Input.GetKeyDown(dashKey))
         {
@@ -300,7 +317,7 @@ public class Player : MonoBehaviour
     }
     #endregion
 
-    #region WallRunning
+    #region WallRunning / WallClimbing
     void CheckWallRun()
     {
         if (!isGrounded)
@@ -326,10 +343,23 @@ public class Player : MonoBehaviour
         }
     }
 
+    void CheckWallClimb()
+    {
+        if (wallForward)
+        {
+            StartClimbing();
+        }
+        if (!wallForward)
+        {
+            StopClimbing();
+        }
+    }
+ 
     void CheckWall()
     {
         wallLeft = Physics.Raycast(player.transform.position, -playerCamera.transform.right, out leftWallHit, wallDistance, RunLayer);
         wallRight = Physics.Raycast(player.transform.position, playerCamera.transform.right, out rightWallHit, wallDistance, RunLayer);
+        wallForward = Physics.Raycast(player.transform.position, playerCamera.transform.forward, out forwardWallHit, wallDistance, ClimbLayer);
     }
 
     void StartWallRun()
@@ -346,7 +376,7 @@ public class Player : MonoBehaviour
             tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
 
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(jumpKey))
         {
             if (wallLeft)
             {
@@ -371,6 +401,27 @@ public class Player : MonoBehaviour
         tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
     }
 
+    void StartClimbing()
+    {
+        rb.useGravity = false;
+
+        rb.AddForce(Vector3.down * climbingGrav, ForceMode.Force);
+
+        canClimb = true;
+    }
+
+    void StopClimbing()
+    {
+        rb.useGravity = true;
+
+        canClimb = false;
+    }
+
+    void Climb()
+    {
+        climbingVector = new Vector3(0, climbingSpeed, 0);
+        rb.AddForce(climbingVector, ForceMode.Force);
+    }
 
     #endregion
     void OnDrawGizmos()
