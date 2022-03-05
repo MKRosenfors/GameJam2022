@@ -9,17 +9,29 @@ public class GrappleController : MonoBehaviour
 
     [Header("Grapple")]
     [SerializeField] KeyCode grappleKey;
+    [SerializeField] KeyCode grappleReelKey;
     [SerializeField] GameObject grapplePrefab;
     [SerializeField] float grappleThrowMod;
     [SerializeField] float grappleLifetime;
     [SerializeField] float grappleSpeed;
     [SerializeField] float minGrappleDistance;
+    [SerializeField] float maxGrappleDistance;
     GameObject currentGrapple;
 
     void Update()
     {
+        DestroyGrappleOnDistance();
         Grapple();
         CheckInput();
+    }
+    void DestroyGrappleOnDistance()
+    {
+        if (currentGrapple == null) return;
+
+        if ((currentGrapple.transform.position - transform.position).magnitude > maxGrappleDistance)
+        {
+            DestroyGrapple();
+        }
     }
     void CheckInput()
     {
@@ -38,9 +50,12 @@ public class GrappleController : MonoBehaviour
         if (currentGrapple.GetComponent<Grapple>().isGrappled == false) return;
         if ((currentGrapple.transform.position - transform.position).magnitude < minGrappleDistance) return;
 
-        GetComponent<Rigidbody>().AddForce((
-            currentGrapple.transform.position - transform.position).normalized 
-            * grappleSpeed);
+        if (Input.GetKey(grappleReelKey))
+        {
+            GetComponent<Rigidbody>().AddForce((
+                currentGrapple.transform.position - transform.position)
+                * grappleSpeed);
+        }
     }
     void ShootGrapple()
     {
