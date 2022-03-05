@@ -1061,7 +1061,7 @@ GameObject:
   - component: {fileID: 679259035}
   m_Layer: 0
   m_Name: Blade
-  m_TagString: Untagged
+  m_TagString: Trap
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1122,8 +1122,6 @@ MonoBehaviour:
   endPos: {fileID: 1036842237}
   pathProgress: 0
   progressMod: 0.3
-  sinHeightMod: 0
-  sinSpeedMod: 0.3
 --- !u!65 &679259036
 BoxCollider:
   m_ObjectHideFlags: 0
