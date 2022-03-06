@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: "Assets/M\xE5ns/Scenes/MainMenu.unity"
+    guid: 9efb62aa07e201c4986d3e9119e0327b
+  - enabled: 1
     path: "Assets/M\xE5ns/Scenes/Pyramid.unity"
     guid: d9e8b70e808e9824b991eeaf8e207776
   m_configObjects: {}
