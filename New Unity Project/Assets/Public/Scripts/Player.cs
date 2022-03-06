@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     public float jumpForce = 5f;
     float movementMultiplier = 10f;
     Vector3 moveDirection;
+    Vector3 climbDirection;
     Vector3 slopeMoveDirection;
     RaycastHit slopeHit;
     //objektet längst upp i player, använd för position i hela världen och right, left rotation
@@ -46,13 +47,14 @@ public class Player : MonoBehaviour
 
     #region Wall Climb
     [Header("Climbing")]
-    [SerializeField] float climbingGrav;
+    //[SerializeField] float climbingGrav;
     [SerializeField] float climbingSpeed;
+    [SerializeField] float climbCheckRadius;
     [SerializeField] LayerMask ClimbLayer;
     private bool canClimb;
-    private Vector3 climbingVector;
-    private bool wallForward = false;
-    RaycastHit forwardWallHit;
+    //private Vector3 climbingVector;
+    //private bool wallForward = false;
+    //RaycastHit forwardWallHit;
     #endregion
 
     #endregion
@@ -65,6 +67,7 @@ public class Player : MonoBehaviour
     [SerializeField] float longJumpGrav;
     float horizontalMovement;
     float verticalMovement;
+    private float fallGravClone;
     #endregion
 
     #region Ground Detection
@@ -109,6 +112,7 @@ public class Player : MonoBehaviour
 
     #region References
     [Header("References")]
+    [SerializeField] Transform raycastPoint;
     Rigidbody rb;
     private Transform latestCheckpointPosition;
     #endregion
@@ -125,6 +129,7 @@ public class Player : MonoBehaviour
         rb.freezeRotation = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        fallGravClone = fallGrav;
     }
 
     void Update()
@@ -136,6 +141,7 @@ public class Player : MonoBehaviour
         MyInput();
         ControlDrag();
         ControlGrav();
+        ControlClimbPhysics();
         CheckWall();
 
         isGrounded = Physics.CheckSphere(new Vector3(player.transform.position.x, player.transform.position.y + groundDetectionSphereOffset, player.transform.position.z), groundDetectionSphere, groundMask);
@@ -155,10 +161,6 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(jumpKey) && isGrounded)
         {
             Jump();
-        }
-        if (Input.GetKey(jumpKey) && canClimb)
-        {
-            Climb();
         }
         if (Input.GetKeyDown(dashKey))
         {
@@ -222,6 +224,10 @@ public class Player : MonoBehaviour
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier * airMultiplier, ForceMode.Acceleration);
         }
+        else if (canClimb)
+        {
+            rb.AddForce(climbDirection.normalized * moveSpeed * climbingSpeed, ForceMode.Acceleration);
+        }
     }
     void MyInput()
     {
@@ -230,6 +236,7 @@ public class Player : MonoBehaviour
 
         //f� rigidbody att rotera och ta den som forward + right
         moveDirection = player.transform.forward * verticalMovement + player.transform.right * horizontalMovement;
+        climbDirection = player.transform.up * verticalMovement + player.transform.right * horizontalMovement;
     }
     void RotateCamera()
     {
@@ -320,12 +327,10 @@ public class Player : MonoBehaviour
             if (wallLeft)
             {
                 StartWallRun();
-                Debug.Log("wall running on the left");
             }
             else if (wallRight)
             {
                 StartWallRun();
-                Debug.Log("wall running on the right");
             }
             else
             {
@@ -340,6 +345,14 @@ public class Player : MonoBehaviour
 
     void CheckWallClimb()
     {
+        if (Physics.CheckSphere(transform.position, climbCheckRadius, ClimbLayer))
+        {
+            canClimb = true;
+        }
+    }
+
+    /*void CheckWallClimb()
+    {
         if (wallForward)
         {
             StartClimbing();
@@ -348,20 +361,20 @@ public class Player : MonoBehaviour
         {
             StopClimbing();
         }
-    }
- 
+    }*/
+
     void CheckWall()
     {
-        wallLeft = Physics.Raycast(player.transform.position, -playerCamera.transform.right, out leftWallHit, wallDistance, RunLayer);
-        wallRight = Physics.Raycast(player.transform.position, playerCamera.transform.right, out rightWallHit, wallDistance, RunLayer);
-        wallForward = Physics.Raycast(player.transform.position, playerCamera.transform.forward, out forwardWallHit, wallDistance, ClimbLayer);
+        wallLeft = Physics.Raycast(player.transform.position, -raycastPoint.transform.right, out leftWallHit, wallDistance, RunLayer);
+        wallRight = Physics.Raycast(player.transform.position, raycastPoint.transform.right, out rightWallHit, wallDistance, RunLayer);
+       // wallForward = Physics.Raycast(player.transform.position, raycastPoint.transform.forward, out forwardWallHit, wallDistance, ClimbLayer);
     }
 
     void StartWallRun()
     {
         rb.useGravity = false;
 
-        rb.AddForce(Vector3.down * wallRunGravity * Time.deltaTime, ForceMode.Force);
+        fallGrav = wallRunGravity;
 
         playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, wallRunfov, wallRunfovTime * Time.deltaTime);
 
@@ -391,12 +404,29 @@ public class Player : MonoBehaviour
     void StopWallRun()
     {
         rb.useGravity = true;
+        fallGrav = fallGravClone;
 
         playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, fov, wallRunfovTime * Time.deltaTime);
         tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
     }
 
-    void StartClimbing()
+    void ControlClimbPhysics()
+    {
+        if (canClimb == true)
+        {
+            rb.useGravity = false;
+            rb.constraints = RigidbodyConstraints.FreezePositionZ;
+            fallGrav = 0f;
+        }
+        if (canClimb == false)
+        {
+            rb.useGravity = true;
+            rb.constraints = RigidbodyConstraints.None;
+            fallGrav = fallGravClone;
+        }
+    }
+
+    /*void StartClimbing()
     {
         rb.useGravity = false;
 
@@ -408,15 +438,17 @@ public class Player : MonoBehaviour
     void StopClimbing()
     {
         rb.useGravity = true;
+        rb.constraints = RigidbodyConstraints.None;
 
         canClimb = false;
     }
 
     void Climb()
     {
+        rb.constraints = RigidbodyConstraints.FreezePositionZ;
         climbingVector = new Vector3(0, climbingSpeed, 0);
         rb.AddForce(climbingVector, ForceMode.Force);
-    }
+    }*/
 
     #endregion
     void OnDrawGizmos()
@@ -424,7 +456,11 @@ public class Player : MonoBehaviour
         //isGrounded Sphere
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(new Vector3(player.transform.position.x, player.transform.position.y + groundDetectionSphereOffset, player.transform.position.z), groundDetectionSphere);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(player.transform.position, climbCheckRadius);
     }
 
 
 }
+
