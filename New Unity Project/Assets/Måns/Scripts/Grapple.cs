@@ -22,7 +22,7 @@ public class Grapple : MonoBehaviour
     }
     void Update()
     {
-        grappable = LayerMask.NameToLayer("Grappable");
+        grappable = LayerMask.NameToLayer("Grapplable");
         UpdateLineRenderer();
         if (!isGrappled)
         {
