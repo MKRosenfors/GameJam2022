@@ -212,21 +212,34 @@ public class Player : MonoBehaviour
     }
     void MovePlayer()
     {
-        if (isGrounded && !OnSlope())
+        if (canClimb == false)
         {
-            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
-        }
-        else if (isGrounded && OnSlope())
-        {
-            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
-        }
-        else if (!isGrounded)
-        {
-            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier * airMultiplier, ForceMode.Acceleration);
+            rb.constraints = RigidbodyConstraints.None;
+            if (isGrounded && !OnSlope())
+            {
+                rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+            }
+            else if (isGrounded && OnSlope())
+            {
+                rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+            }
+            else if (!isGrounded)
+            {
+                rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier * airMultiplier, ForceMode.Acceleration);
+            }
         }
         else if (canClimb)
         {
-            rb.AddForce(climbDirection.normalized * moveSpeed * climbingSpeed, ForceMode.Acceleration);
+            rb.constraints = RigidbodyConstraints.FreezePositionY;
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.W))
+            {
+                rb.AddForce(climbDirection.normalized * moveSpeed * climbingSpeed, ForceMode.Acceleration);
+                rb.constraints = RigidbodyConstraints.None;
+            }
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
+            {
+                rb.AddForce(climbDirection.normalized * moveSpeed * climbingSpeed, ForceMode.Acceleration);
+            }
         }
     }
     void MyInput()
@@ -348,6 +361,10 @@ public class Player : MonoBehaviour
         if (Physics.CheckSphere(transform.position, climbCheckRadius, ClimbLayer))
         {
             canClimb = true;
+        }
+        else
+        {
+            canClimb = false;
         }
     }
 
