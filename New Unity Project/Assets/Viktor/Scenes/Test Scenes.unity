@@ -232,9 +232,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f1dd321919ae6e4ea9fc0c8aa3c6e73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dartsFired: 10
-  projectileSpeed: 50
-  dartPrefab: {fileID: 1849686527933000698, guid: 5387988424c8e5b4dab8a76830549bd5, type: 3}
+  dartsFired: 15
+  projectileSpeed: 7
+  dartPrefab: {fileID: 2219050082621486275, guid: a1054f1441a90fd4d90dce4d7c54aca4, type: 3}
 --- !u!65 &90923292
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1848,7 +1848,6 @@ MonoBehaviour:
   RunLayer:
     serializedVersion: 2
     m_Bits: 256
-  climbingGrav: 10
   climbingSpeed: 14
   climbCheckRadius: 1
   ClimbLayer:

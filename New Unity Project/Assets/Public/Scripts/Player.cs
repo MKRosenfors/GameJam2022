@@ -415,13 +415,13 @@ public class Player : MonoBehaviour
         if (canClimb == true)
         {
             rb.useGravity = false;
-            rb.constraints = RigidbodyConstraints.FreezePositionZ;
+            //rb.constraints = RigidbodyConstraints.FreezePositionZ;
             fallGrav = 0f;
         }
         if (canClimb == false)
         {
             rb.useGravity = true;
-            rb.constraints = RigidbodyConstraints.None;
+            //rb.constraints = RigidbodyConstraints.None;
             fallGrav = fallGravClone;
         }
     }
